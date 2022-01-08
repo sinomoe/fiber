@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // helper function: log message to screen
+        function log(msg) {
+            document.getElementById('log').textContent += msg + '\n';
+        }
+
+        // setup websocket with callbacks
+        var ws = new WebSocket('ws://localhost:8879/ws?user=wang');
+        ws.onopen = function() {
+            log('CONNECT');
+        };
+        ws.onclose = function() {
+            log('DISCONNECT');
+        };
+        ws.onmessage = function(event) {
+            log('MESSAGE: ' + event.data);
+        };
+    </script>
+</head>
+<body>
+<pre id="log"></pre>
+</body>
+</html>
