@@ -1,0 +1,4 @@
+websocket_port: 8879
+rpc:
+  network: tcp
+  port: 8869

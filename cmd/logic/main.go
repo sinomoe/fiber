@@ -7,12 +7,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sinomoe/fiber/internal/config"
 	"github.com/sinomoe/fiber/internal/logic"
-	"github.com/sinomoe/fiber/pkg/config"
 )
 
 func main() {
-	cfg, err := config.LoadLogic("configs/logic.yaml")
+	cfg := new(config.Logic)
+	err := config.Load("configs/logic.yaml", cfg)
 	if err != nil {
 		panic(err)
 	}

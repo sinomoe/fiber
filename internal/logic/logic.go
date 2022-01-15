@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/sinomoe/fiber/internal/config"
+
 	"github.com/sinomoe/fiber/internal/logic/service"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sinomoe/fiber/pkg/config"
 	"github.com/sinomoe/fiber/pkg/queue"
 )
 
@@ -20,7 +21,7 @@ type Server struct {
 }
 
 func NewServer(cfg *config.Logic) *Server {
-	q := queue.NewRedis(cfg.Address, cfg.Password, cfg.Stream, cfg.Group, cfg.DB)
+	q := queue.NewRedis(cfg.Queue.Address, cfg.Queue.Password, cfg.Queue.Stream, cfg.Queue.Group, cfg.Queue.DB)
 	service.InitQueue(q)
 	r := gin.Default()
 	register(r)

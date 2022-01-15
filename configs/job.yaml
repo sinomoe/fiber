@@ -1,0 +1,11 @@
+rpc:
+  network: tcp
+  port: 8869
+  retry: 10
+
+queue:
+  address: 127.0.0.1:6379
+  password: ""
+  stream: mystream
+  group: g1
+  db: 0
