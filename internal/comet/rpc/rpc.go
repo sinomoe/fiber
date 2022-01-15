@@ -1,34 +1,28 @@
 package rpc
 
 import (
-	"github.com/sinomoe/fiber/pkg/base"
-	comet2 "github.com/sinomoe/fiber/pkg/comet"
+	"github.com/sinomoe/fiber/pkg/dto/base"
 	"log"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
+
+	"github.com/sinomoe/fiber/internal/comet"
+	dto "github.com/sinomoe/fiber/pkg/dto/comet"
 )
 
-type SendRequest struct {
-	From    string
-	To      string
-	Message string
-}
-
-type SendResponse struct{}
-
 type CometService struct {
-	comet *comet2.Comet
+	comet *comet.Comet
 }
 
-func NewCometService(comet *comet2.Comet) CometService {
+func NewCometService(comet *comet.Comet) CometService {
 	return CometService{
 		comet: comet,
 	}
 }
 
-func (s CometService) Send(req SendRequest, resp *SendResponse) (err error) {
-	var cli *comet2.Client
+func (s CometService) Send(req dto.SendRequest, resp *dto.SendResponse) (err error) {
+	var cli *comet.Client
 	if cli, err = s.comet.GetClient(req.To); err != nil {
 		return err
 	}

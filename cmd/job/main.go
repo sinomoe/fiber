@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/sinomoe/fiber/pkg/comet/rpc"
-	"github.com/sinomoe/fiber/pkg/job"
+	"github.com/sinomoe/fiber/internal/comet/rpc"
+	"github.com/sinomoe/fiber/internal/job"
 	"github.com/sinomoe/fiber/pkg/queue"
 	"log"
 	rpc2 "net/rpc"

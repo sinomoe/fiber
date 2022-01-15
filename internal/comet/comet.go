@@ -3,7 +3,7 @@ package comet
 import (
 	"errors"
 	"github.com/gorilla/websocket"
-	"github.com/sinomoe/fiber/pkg/base"
+	"github.com/sinomoe/fiber/pkg/dto/base"
 	"log"
 	"net/http"
 	"sync"

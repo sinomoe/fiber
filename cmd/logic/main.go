@@ -1,42 +1,28 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/sinomoe/fiber/pkg/base"
-	"github.com/sinomoe/fiber/pkg/queue"
 	"log"
-	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/sinomoe/fiber/internal/logic"
+	"github.com/sinomoe/fiber/pkg/config"
 )
 
-type SendRequest struct {
-	To      string `json:"to" binding:"required"`
-	From    string `json:"from" binding:"required"`
-	Message string `json:"message" binding:"required"`
-}
-
 func main() {
-	q := queue.NewRedis("127.0.0.1:6379", "", "mystream", "g1", 0)
-	defer q.Shutdown()
-	r := gin.Default()
-	r.POST("/send", func(c *gin.Context) {
-		var (
-			req SendRequest
-			err error
-		)
-		if err = c.ShouldBindJSON(&req); err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		if err = q.Produce(base.Message{
-			From:    req.From,
-			To:      req.To,
-			Message: req.Message,
-		}); err != nil {
-			log.Println("produce failed err:", err)
-			c.AbortWithStatus(http.StatusInternalServerError)
-			return
-		}
-		c.JSON(http.StatusOK, nil)
-	})
-	r.Run(":8859")
+	cfg, err := config.LoadLogic("configs/logic.yaml")
+	if err != nil {
+		panic(err)
+	}
+	svr := logic.NewServer(cfg)
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
+	<-sig
+	log.Println("shutting down gracefully")
+	svr.Shutdown()
+
+	<-time.After(time.Second)
 }

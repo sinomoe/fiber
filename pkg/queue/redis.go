@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-redis/redis/v8"
-	"github.com/sinomoe/fiber/pkg/base"
+	"github.com/sinomoe/fiber/pkg/dto/base"
 	"math/rand"
 	"strconv"
 	"time"

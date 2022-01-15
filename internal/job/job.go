@@ -1,10 +1,11 @@
 package job
 
 import (
-	rpc2 "github.com/sinomoe/fiber/pkg/comet/rpc"
-	"github.com/sinomoe/fiber/pkg/queue"
 	"log"
 	"net/rpc"
+
+	"github.com/sinomoe/fiber/pkg/dto/comet"
+	"github.com/sinomoe/fiber/pkg/queue"
 )
 
 type Job struct {
@@ -30,10 +31,10 @@ func (j *Job) Spin() {
 			return
 		case msg := <-j.q.Consume():
 			var (
-				resp rpc2.SendResponse
+				resp comet.SendResponse
 				err  error
 			)
-			if err = j.cli.Call("CometService.Send", rpc2.SendRequest{
+			if err = j.cli.Call("CometService.Send", comet.SendRequest{
 				From:    msg.From,
 				To:      msg.To,
 				Message: msg.Message,

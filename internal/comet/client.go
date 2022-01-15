@@ -3,7 +3,7 @@ package comet
 import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
-	"github.com/sinomoe/fiber/pkg/base"
+	"github.com/sinomoe/fiber/pkg/dto/base"
 	"time"
 )
 
