@@ -1,19 +1,30 @@
 package comet
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
-	"github.com/gorilla/websocket"
-	"github.com/sinomoe/fiber/pkg/dto/base"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/sinomoe/fiber/internal/logic/dto"
+
+	"github.com/sinomoe/fiber/internal/config"
+
+	"github.com/gorilla/websocket"
+	"github.com/sinomoe/fiber/pkg/dto/base"
 )
 
 type Comet struct {
 	address string
 	clients map[string]*Client
 	l       sync.RWMutex
+
+	logicCli *http.Client
+	cfg      *config.Comet
 }
 
 var upgrader = websocket.Upgrader{
@@ -24,10 +35,12 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func NewComet(address string) *Comet {
+func NewComet(cfg *config.Comet) *Comet {
 	comet := &Comet{
-		address: address,
-		clients: make(map[string]*Client),
+		address:  fmt.Sprintf(":%d", cfg.WebsocketPort),
+		clients:  make(map[string]*Client),
+		logicCli: &http.Client{},
+		cfg:      cfg,
 	}
 	return comet
 }
@@ -38,18 +51,23 @@ func (c *Comet) Spin() {
 }
 
 func (c *Comet) serveClient(w http.ResponseWriter, r *http.Request) {
-	userId := r.URL.Query().Get("user")
-	if len(userId) == 0 {
+	var (
+		token = r.URL.Query().Get("token")
+		user  string
+		conn  *websocket.Conn
+		err   error
+	)
+	if user, err = c.validateToken(token); err != nil {
+		log.Println(err)
 		return
 	}
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
+	if conn, err = upgrader.Upgrade(w, r, nil); err != nil {
 		log.Println(err)
 		return
 	}
 
 	client := &Client{
-		userId:         userId,
+		userId:         user,
 		comet:          c,
 		conn:           conn,
 		Send:           make(chan base.Message, 16),
@@ -60,7 +78,35 @@ func (c *Comet) serveClient(w http.ResponseWriter, r *http.Request) {
 	}
 	go client.heartbeat()
 	go client.writePump()
-	c.Register(userId, client)
+	c.Register(user, client)
+}
+
+func (c *Comet) validateToken(token string) (username string, err error) {
+	var (
+		req  *http.Request
+		resp *http.Response
+		bs   []byte
+	)
+	if bs, err = json.Marshal(dto.ParseTokenRequest{Token: token}); err != nil {
+		return
+	}
+	if req, err = http.NewRequest(http.MethodPost, c.cfg.LogicUrl, bytes.NewReader(bs)); err != nil {
+		return
+	}
+	if resp, err = c.logicCli.Do(req); err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		err = errors.New("token invalid")
+		return
+	}
+	var r dto.ParseTokenResponse
+	if err = json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return
+	}
+	username = r.Username
+	return
 }
 
 func (c *Comet) Register(userId string, conn *Client) {

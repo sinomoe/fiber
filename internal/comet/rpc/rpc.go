@@ -1,11 +1,14 @@
 package rpc
 
 import (
-	"github.com/sinomoe/fiber/pkg/dto/base"
+	"fmt"
 	"log"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
+
+	"github.com/sinomoe/fiber/internal/config"
+	"github.com/sinomoe/fiber/pkg/dto/base"
 
 	"github.com/sinomoe/fiber/internal/comet"
 	dto "github.com/sinomoe/fiber/pkg/dto/comet"
@@ -42,10 +45,10 @@ type CometRpcServer struct {
 	network, address string
 }
 
-func NewCometRpcServer(network, address string) *CometRpcServer {
+func NewCometRpcServer(cfg *config.Comet) *CometRpcServer {
 	return &CometRpcServer{
-		network: network,
-		address: address,
+		network: cfg.Rpc.Network,
+		address: fmt.Sprintf(":%d", cfg.Rpc.Port),
 	}
 }
 

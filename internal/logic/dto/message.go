@@ -1,9 +1,8 @@
 package dto
 
 type SendMessageRequest struct {
-	From    string `json:"from"`
-	To      string `json:"to"`
-	Message string `json:"message"`
+	To      string `json:"to" binding:"required"`
+	Message string `json:"message" binding:"required"`
 }
 
 type SendMessageResponse struct {

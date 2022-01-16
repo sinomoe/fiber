@@ -1,4 +1,5 @@
 websocket_port: 8879
+logic_url: http://127.0.0.1:8859/auth/parse
 rpc:
   network: tcp
   port: 8869

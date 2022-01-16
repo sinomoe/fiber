@@ -6,3 +6,4 @@ queue:
   db: 0
 
 port: 8859
+auth_secret: secretkey

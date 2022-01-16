@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	nrpc "net/rpc"
 
 	config2 "github.com/sinomoe/fiber/internal/config"
@@ -16,8 +15,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	c := comet.NewComet(fmt.Sprintf(":%d", cfg.WebsocketPort))
-	s := rpc.NewCometRpcServer(cfg.Rpc.Network, fmt.Sprintf(":%d", cfg.Rpc.Port))
+	c := comet.NewComet(cfg)
+	s := rpc.NewCometRpcServer(cfg)
 	nrpc.Register(rpc.NewCometService(c))
 	s.Run()
 	c.Spin()

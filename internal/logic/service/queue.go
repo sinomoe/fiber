@@ -30,9 +30,9 @@ func GetQueue() *Queue {
 	return queueSvc
 }
 
-func (q *Queue) SendMessage(ctx context.Context, req dto.SendMessageRequest) (resp dto.SendMessageResponse, err error) {
+func (q *Queue) SendMessage(ctx context.Context, from string, req dto.SendMessageRequest) (resp dto.SendMessageResponse, err error) {
 	err = q.q.Produce(base.Message{
-		From:    req.From,
+		From:    from,
 		To:      req.To,
 		Message: req.Message,
 	})

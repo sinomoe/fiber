@@ -23,6 +23,7 @@ type Server struct {
 func NewServer(cfg *config.Logic) *Server {
 	q := queue.NewRedis(cfg.Queue.Address, cfg.Queue.Password, cfg.Queue.Stream, cfg.Queue.Group, cfg.Queue.DB)
 	service.InitQueue(q)
+	service.InitAuth(cfg.AuthSecret)
 	r := gin.Default()
 	register(r)
 	srv := &http.Server{

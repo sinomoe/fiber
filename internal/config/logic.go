@@ -6,8 +6,9 @@ func GetLogic(path string) *Logic {
 }
 
 type Logic struct {
-	Queue Queue `yaml:"queue"`
-	Port  int
+	Queue      Queue  `yaml:"queue"`
+	Port       int    `yaml:"port"`
+	AuthSecret string `yaml:"auth_secret"`
 }
 
 type Queue struct {

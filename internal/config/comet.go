@@ -6,11 +6,12 @@ func GetComet(path string) *Comet {
 }
 
 type Comet struct {
-	WebsocketPort int `yaml:"websocket_port"`
-	Rpc           Rpc `yaml:"rpc"`
+	WebsocketPort int      `yaml:"websocket_port"`
+	Rpc           CometRpc `yaml:"rpc"`
+	LogicUrl      string   `yaml:"logic_url"`
 }
 
-type Rpc struct {
+type CometRpc struct {
 	Network string `yaml:"network"`
 	Port    int    `yaml:"port"`
 }
