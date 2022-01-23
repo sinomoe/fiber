@@ -29,13 +29,13 @@ func (s CometService) Send(req dto.SendRequest, resp *dto.SendResponse) (err err
 	if cli, err = s.comet.GetClient(req.To); err != nil {
 		return err
 	}
-	if len(cli.Send) == cap(cli.Send) {
-		return nil
-	}
-	cli.Send <- base.Message{
+	select {
+	case cli.Send <- base.Message{
 		From:    req.From,
 		To:      req.To,
 		Message: req.Message,
+	}:
+	default:
 	}
 	return nil
 }
